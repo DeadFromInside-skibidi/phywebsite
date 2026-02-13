@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravitational Attraction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --chrome: linear-gradient(145deg, #e0e0e0, #ffffff, #a1a1a1);
+            --prism: linear-gradient(90deg, #ff000033, #00ff0033, #0000ff33);
+            --neon-border: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            --bg: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .prism-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
+            z-index: -1;
+        }
+
+        .prism-flare {
+            position: absolute;
+            width: 150vw;
+            height: 150vh;
+            background: conic-gradient(from 180deg at 50% 50%, #ff000022 0%, #00ff0011 25%, #00ffff22 50%, #ff00ff11 75%, #ff000022 100%);
+            filter: blur(100px);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .chrome-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4rem 3rem;
+            border-radius: 2px;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .chrome-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+        }
+
+        .glitch-text {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            background: linear-gradient(to bottom, #fff 40%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-family: 'Space Mono', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+            outline: none;
+        }
+
+        .btn-yes {
+            background: white;
+            color: black;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.4), 0 0 0 5px rgba(255,255,255,0.1);
+        }
+
+        .btn-no {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            position: absolute;
+        }
+
+        /* Success State */
+        #success-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 100;
+            padding: 4rem;
+            overflow-y: auto;
+        }
+
+        .einstein-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            border-left: 1px solid #333;
+            padding-left: 2rem;
+        }
+
+        .formula {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: #00ffaa;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: reveal 0.8s forwards;
+        }
+
+        .funny-note {
+            font-size: 5rem;
+            font-weight: 900;
+            color: white;
+            margin: 2rem 0;
+            line-height: 0.9;
+        }
+
+        .hindi-text {
+            color: #ff0055;
+            text-decoration: underline;
+            text-underline-offset: 10px;
+        }
+
+        .meme-subtext {
+            font-family: 'Space Mono', monospace;
+            color: #666;
+            margin-top: 4rem;
+            font-style: italic;
+        }
+
+        @keyframes reveal {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chromatic-aberration {
+            text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+        }
+
+        .prism-border {
+            position: absolute;
+            inset: -2px;
+            background: var(--neon-border);
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0.3;
+            background-size: 400%;
+            animation: move-border 10s linear infinite;
+        }
+
+        @keyframes move-border {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="prism-background">
+        <div class="prism-flare"></div>
+    </div>
+
+    <div class="container" id="main-ui">
+        <div class="chrome-card">
+            <div class="prism-border"></div>
+            <p class="subtitle">System Request // Quantum Protocol</p>
+            <h1 class="glitch-text">Will you be my physics tutor?</h1>
+            <p style="margin-bottom: 3rem; color: #aaa;">The second law of thermodynamics states that entropy increases, but my grades are decreasing faster.</p>
+            
+            <div class="btn-wrapper">
+                <button class="btn btn-yes" onclick="celebrate()">YES, I'LL HELP</button>
+                <button class="btn btn-no" id="no-btn" onmouseover="dodge()" onclick="dodge()">NO THANK YOU</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-screen">
+        <div class="einstein-grid">
+            <p class="subtitle" style="color: #00ffaa;">[ CALCULATION COMPLETE ]</p>
+            <div class="formula">
+                G<sub>μν</sub> + Λg<sub>μν</sub> = (8πG / c<sup>4</sup>) T<sub>μν</sub>
+            </div>
+            <div class="formula" style="animation-delay: 0.2s">
+                R<sub>μν</sub> - ½Rg<sub>μν</sub> + Λg<sub>μν</sub> = κT<sub>μν</sub>
+            </div>
+            <div class="formula" style="animation-delay: 0.4s; color: #fff;">
+                ds² = -(1 - 2GM/rc²)dt² + (1 - 2GM/rc²)⁻¹dr² + r²dΩ²
+            </div>
+            
+            <h2 class="funny-note chromatic-aberration">
+                YEH <span class="hindi-text">SAMJHADO</span> BAS.
+            </h2>
+            
+            <p class="formula" style="color: #666; font-size: 1rem; animation-delay: 0.8s;">
+                Note: If you can explain tensors to me, I will literally consider you a higher-dimensional being.
+            </p>
+
+            <div class="meme-subtext">
+                "In this house, we obey the laws of thermodynamics (and whatever you say because you're the smart one)."
+                <br><br>
+                <span style="color: #fff">Physics rizz level: Infinite.</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('no-btn');
+        const mainUi = document.getElementById('main-ui');
+        const successScreen = document.getElementById('success-screen');
+        
+        const rejectionTexts = [
+            "Please don't say no",
+            "Newton is crying",
+            "Think of the atoms!",
+            "Entropy will win!",
+            "I'll buy you a prism?",
+            "Calculation Error: Try Yes",
+            "My heart is redshifting",
+            "Gravity is failing!",
+            "Schrödinger's No"
+        ];
+        
+        let textIndex = 0;
+
+        function dodge() {
+            const x = Math.random() * (window.innerWidth - 200) - (window.innerWidth / 2) + 100;
+            const y = Math.random() * (window.innerHeight - 100) - (window.innerHeight / 2) + 50;
+            
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            
+            noBtn.innerText = rejectionTexts[textIndex];
+            textIndex = (textIndex + 1) % rejectionTexts.length;
+            
+            // Add a little chromatic flash
+            noBtn.style.boxShadow = `0 0 30px hsla(${Math.random() * 360}, 100%, 50%, 0.5)`;
+        }
+
+        function celebrate() {
+            mainUi.style.opacity = '0';
+            mainUi.style.transform = 'scale(0.9) translateY(20px)';
+            mainUi.style.transition = 'all 0.5s ease';
+            
+            setTimeout(() => {
+                mainUi.style.display = 'none';
+                successScreen.style.display = 'block';
+                document.body.style.overflow = 'auto';
+            }, 500);
+        }
+
+        // Add mouse move effect for the prism card
+        document.addEventListener('mousemove', (e) => {
+            const card = document.querySelector('.chrome-card');
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+    </script>
+</body>
+</html>
+
+
