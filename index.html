@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viscous Physics Proposal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;800&family=Playfair+Display:ital,wght@0,600;1,600&family=Space+Mono&family=JetBrains+Mono:wght@200;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --chrome: linear-gradient(145deg, #f0f0f0, #bebebe);
+            --mercury: linear-gradient(180deg, #ffffff 0%, #a5a5a5 45%, #6b6b6b 50%, #e0e0e0 100%);
+            --bg: #0a0a0a;
+            --accent: #ff2d55;
+            --gold-chalk: #e6c7a0;
+            --slate: #0d0d0d;
+            --velvet: #1a0b0e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            background-color: var(--slate);
+            background-image: 
+                radial-gradient(circle at 50% 50%, var(--velvet) 0%, var(--slate) 100%),
+                url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #custom-cursor {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            filter: blur(80px) contrast(1.2);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(60%, 40%); }
+        }
+
+        /* Initial Screen (from bestwebsite.html) */
+        #proposal-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 10;
+            transition: all 1s ease;
+        }
+
+        .title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin-bottom: 2rem;
+            background: var(--mercury);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+
+        .button-container {
+            display: flex;
+            gap: 2rem;
+            position: relative;
+            min-height: 100px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 1.2rem 3.5rem;
+            font-size: 1rem;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-yes {
+            background: white;
+            color: black;
+            box-shadow: 0 0 40px rgba(255,255,255,0.2);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 60px rgba(255,255,255,0.4);
+        }
+
+        .btn-no {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Success Screen (Adapted from phy2web.html) */
+        #success-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .physics-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(230, 199, 160, 0.2);
+            padding: 3rem;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .problem-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 2rem;
+        }
+
+        .sticky-note {
+            background: #feff9c;
+            color: #333;
+            padding: 15px;
+            transform: rotate(3deg);
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-style: italic;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            margin-top: -10px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .valentine-note {
+            margin-top: 2rem;
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .floating-particle {
+            position: absolute;
+            color: var(--accent);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .smear-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 51, 68, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(230, 199, 160, 0.03) 0%, transparent 40%);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+    <div class="liquid-bg"><div class="blob"></div></div>
+    <div class="smear-overlay"></div>
+    <audio id="bg-music" src="song.mp3" loop></audio>
+
+    <section id="proposal-screen">
+        <h1 class="title">Will you be my physics tutor?</h1>
+        <div class="button-container">
+            <button class="btn btn-yes" onclick="celebrate()">YES</button>
+            <button class="btn btn-no" id="noBtn" onmouseover="displaceNo()" onclick="displaceNo()">NO</button>
+        </div>
+    </section>
+
+    <section id="success-screen">
+        <div class="physics-card">
+            <img src="image.jpg" alt="Physics Problem" class="problem-image">
+            <div class="sticky-note">
+                "bas yeh smjhado please"
+            </div>
+        </div>
+        
+        <div class="valentine-note">
+            (You're the only one who can solve this problem) ❤️
+        </div>
+    </section>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const proposalScreen = document.getElementById('proposal-screen');
+        const successScreen = document.getElementById('success-screen');
+        const cursor = document.getElementById('custom-cursor');
+        const audio = document.getElementById('bg-music');
+
+        const rejections = [
+            "Are you sure?",
+            "Really?",
+            "Think again...",
+            "Think harder...",
+            "Error: Invalid Choice",
+            "Try the other button",
+            "Mercury is in retrograde",
+            "Nice try",
+            "Wait, what?",
+            "No is not an option"
+        ];
+
+        let clickCount = 0;
+
+        // Custom Cursor
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function displaceNo() {
+            const maxX = window.innerWidth - noBtn.offsetWidth - 40;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 40;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+
+            if (clickCount < rejections.length) {
+                noBtn.innerText = rejections[clickCount];
+            } else {
+                noBtn.style.transform = 'scale(0.5)';
+                noBtn.style.opacity = '0.5';
+                noBtn.innerText = "Give up?";
+            }
+            
+            clickCount++;
+        }
+
+        function celebrate() {
+            proposalScreen.style.opacity = '0';
+            proposalScreen.style.transform = 'scale(1.2) translateY(-20px)';
+            
+            audio.play();
+            
+            setTimeout(() => {
+                proposalScreen.style.display = 'none';
+                successScreen.style.display = 'flex';
+                
+                for(let i = 0; i < 20; i++) {
+                    createParticle();
+                }
+
+                setTimeout(() => {
+                    successScreen.style.opacity = '1';
+                }, 50);
+            }, 1000);
+        }
+
+        // Add viscous motion effect to the blob
+        let mouseX = 0, mouseY = 0;
+        let blobX = 0, blobY = 0;
+        const blob = document.querySelector('.blob');
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateBlob() {
+            blobX += (mouseX - blobX) * 0.01;
+            blobY += (mouseY - blobY) * 0.01;
+            
+            blob.style.left = (blobX - window.innerWidth/4) + 'px';
+            blob.style.top = (blobY - window.innerHeight/4) + 'px';
+            
+            requestAnimationFrame(animateBlob);
+        }
+        animateBlob();
+
+        function createParticle() {
+            const p = document.createElement('div');
+            p.className = 'floating-particle';
+            p.innerHTML = ['∫', 'Σ', 'λ', '∞', '❤'][Math.floor(Math.random() * 5)];
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = Math.random() * 100 + 'vh';
+            p.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            document.body.appendChild(p);
+            
+            const animation = p.animate([
+                { transform: 'translateY(0) rotate(0deg)', opacity: 0.5 },
+                { transform: `translateY(-${Math.random() * 200 + 100}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 3000 + 2000,
+                iterations: Infinity
+            });
+        }
+
+    </script>
+</body>
+</html>
